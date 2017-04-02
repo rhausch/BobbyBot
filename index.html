@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="lib/chessboardjs/css/chessboard-0.3.0.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+<div id="board" style="width: 400px"></div>
+
+<div id="stats">
+   <div>
+       Search depth:
+        <select id="search-depth">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3" selected>3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+   </div>
+   <div>Positions evaluated: <span id="position-count"></span></div>
+   <div>Time: <span id="time"></span></div>
+   <div>Positions/s: <span id="positions-per-s"></span> </div>
+   <div>Board Value: <span id="board-value"></span></div>
+   <div>Moves: <span id="num-moves"></span></div>
+
+</div>
+
+<div id="movelog">
+    Moves:
+    <ul id="movelist"></ul>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+<script src="lib/chessjs/chess.js"></script>
+<script src="lib/chessboardjs/js/chessboard-0.3.0.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+
+</html>
