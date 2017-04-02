@@ -18,9 +18,9 @@ var getPieceValue = function (piece) {
         } else if (piece.type === 'r') {
             return 50;
         } else if (piece.type === 'n') {
-            return 30;
+            return 32;
         } else if (piece.type === 'b') {
-            return 30 ;
+            return 33 ;
         } else if (piece.type === 'q') {
             return 90;
         } else if (piece.type === 'k') {
@@ -53,13 +53,13 @@ var evaluateGame = function (game) {
 }
 
 var calculateBestMove = function(game) {
-    var moves = game.moves();
+    var moves = game.ugly_moves();
     var turn = game.turn() == 'w' ? 1 : -1;
     var bestMove = null;
     var bestValue = -9999;
     for (var i = 0; i < moves.length; i++) {
         var move = moves[i];
-        game.move(move);
+        game.ugly_move(move);
         var value = evaluateGame(game) * turn;
         if (value > bestValue) {
             bestValue = value;
@@ -71,44 +71,49 @@ var calculateBestMove = function(game) {
 }
 
 var calculateBestMinMaxMove = function(depth, game, isWhite) {
-    var moves = game.moves();
+    var moves = game.ugly_moves();
     var turn = game.turn() == 'w' ? 1 : -1;
     var bestValue = -9999;
     var bestMove = null;
 
     for (var i = 0; i < moves.length; i++) {
         var move = moves[i];
-        game.move(move);
-        var value = minmax(depth - 1, game, !isWhite) * turn;
-        //console.log("Value of "+move+" is "+value);
+        game.ugly_move(move);
+        var value = minmax(depth - 1, game, -10000, 10000, !isWhite) * turn;
         game.undo();
         if (value > bestValue) {
             bestValue = value;
             bestMove = move;
         }
     }
-    return bestMove;
+    return game.make_pretty(bestMove);
 }
 
-var minmax = function (depth, game, isMaximize) {
+var minmax = function (depth, game, alpha, beta, isMaximize) {
     if (depth == 0) {
         return evaluateGame(game);
     }
-    var moves = game.moves();
+    var moves = game.ugly_moves();
     if (isMaximize) {
         var bestValue = -9999;
         for (var i = 0; i < moves.length; i++) {
-            game.move(moves[i]);
-            bestValue = Math.max(bestValue, minmax(depth - 1, game, !isMaximize));
+            game.ugly_move(moves[i]);
+            bestValue = Math.max(bestValue, minmax(depth - 1, game, alpha, beta, !isMaximize));
             game.undo();
+            alpha = Math.max(alpha, bestValue);
+            if (beta <= alpha)
+                break;
         }
         return bestValue;
     } else {
         var bestValue = 9999;
         for (var i = 0; i < moves.length; i++) {
-            game.move(moves[i]);
-            bestValue = Math.min(bestValue, minmax(depth - 1, game, !isMaximize));
+            game.ugly_move(moves[i]);
+            bestValue = Math.min(bestValue, minmax(depth - 1, game, alpha, beta, !isMaximize));
             game.undo();
+            beta = Math.min(beta, bestValue);
+            if (beta <= alpha)
+                break;
         }
         return bestValue;
     }
@@ -137,7 +142,7 @@ var makeBestSingleMove = function () {
 
     game.move(move);
 
-    console.log("Made move", move);
+    console.log("Made best single move", move);
 
     console.log("Update board");
     board.position(game.fen());
@@ -166,7 +171,7 @@ var makeBestMinMaxMove = function () {
 
     game.move(move);
 
-    console.log("Made move", move);
+    console.log("Made best MinMax move", move.san);
 
     console.log("Update board");
     board.position(game.fen());
